@@ -12,3 +12,142 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id                  Int             @id @default(autoincrement())
+  firstName           String          
+  lastName            String
+  mobile              String?         @unique
+  email               String?         @unique
+  password            String
+  registerAt          DateTime        @default(now()) @db.Timestamp(0)
+  profileImage        String?
+  coverImage          String?
+  building            BuildingName
+  roomNumber          Int
+  residentType        ResidentType    
+  gender              GenderType
+  isAdmin 	          Boolean         @default(false)
+  userName            String
+  isApproved          Boolean         @default(false)
+  approveAt           DateTime        @default(now()) @db.Timestamp(0)
+  idDocument          String
+  isActive            Boolean         @default(true)
+
+  posts               Post[]
+  postLikes           PostLike[]
+  comments            Comment[]
+  commentLikes        CommentLike[]
+}
+
+enum BuildingName {
+  A
+  B
+  C 
+  D
+  E
+}
+
+enum GenderType {
+  MALE
+  FEMALE
+  OTHERS
+}
+enum ResidentType {
+  CO_OWNER
+  CO_HABITANT
+  RENTEE
+}
+
+model Forum{
+  id                  Int             @id @default(autoincrement())
+  forumType           ForumType
+
+  threads             Thread[]
+}
+
+enum ForumType {
+  JURISTIC_CAT
+  RESIDENT_CAT
+  SALERENT_CAT
+}
+
+model Thread{
+  id                  Int             @id @default(autoincrement())
+  forumId             Int
+  threadTitle         String
+  threadDescription   String
+  threadIcon          String
+
+  forum               Forum           @relation(fields:[forumId], references:[id])
+
+  posts               Post[]
+}
+
+model Post{
+  id                  Int             @id @default(autoincrement())
+  userId              Int
+  threadId            Int
+  postTitle           String
+  postDescription     String
+  postVideoLink       String?
+  postMapLink         String?
+  postCreatedAt       DateTime        @default(now()) @db.Timestamp(0)
+  postUpdatedAt       DateTime        @updatedAt @db.Timestamp(0)
+  postDeletedAt       DateTime?       @db.Timestamp(0)
+
+  user                User            @relation(fields:[userId], references:[id])
+  thread              Thread          @relation(fields:[threadId], references:[id])
+
+  comments            Comment[]
+  postLikes           PostLike[]
+  postImages          PostImage[]
+}
+
+model PostImage{
+  id                  Int             @id @default(autoincrement())
+  postId              Int
+  postImageLink       String
+
+  post                Post            @relation(fields:[postId], references:[id])
+}
+
+model Comment{
+  id                  Int             @id @default(autoincrement())
+  postId              Int
+  userId              Int
+  commentImage        String
+  commentMessage      String
+  commentVideoLink    String
+  commentMapLink      String
+  commentCreatedAt    DateTime        @default(now()) @db.Timestamp(0)
+  commentUpdatedAt    DateTime        @updatedAt @db.Timestamp(0)
+  commentDeletedAt    DateTime?       @db.Timestamp(0)
+
+  user                User            @relation(fields:[userId], references:[id])
+  post                Post            @relation(fields:[postId], references:[id])
+
+  commentLikes        CommentLike[]
+}
+
+model PostLike{
+  createdAt           DateTime        @default(now()) @db.Timestamp(0)
+  userId              Int
+  postId              Int
+
+  user                User            @relation(fields:[userId], references:[id])
+  post                Post            @relation(fields:[postId], references:[id])
+
+  @@id([userId,postId])
+}
+
+model CommentLike{
+  createdAt           DateTime        @default(now()) @db.Timestamp(0)
+  userId              Int
+  commentId           Int
+
+  user                User            @relation(fields:[userId], references:[id])
+  comment             Comment         @relation(fields:[commentId], references:[id])
+
+  @@id([userId,commentId])
+}

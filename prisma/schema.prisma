@@ -24,14 +24,14 @@ model User {
   profileImage        String?
   coverImage          String?
   building            BuildingName
-  roomNumber          Int
+  roomNumber          String
   residentType        ResidentType    
-  gender              GenderType
+  gender              GenderType?
   isAdmin 	          Boolean         @default(false)
-  userName            String
+  userName            String?
   isApproved          Boolean         @default(false)
   approveAt           DateTime        @default(now()) @db.Timestamp(0)
-  idDocument          String
+  idDocument          String?
   isActive            Boolean         @default(true)
 
   posts               Post[]

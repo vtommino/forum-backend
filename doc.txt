@@ -1,0 +1,16 @@
+--- REGISTER 
+POST /auth/register 
+BODY 
+    firstName
+    lastName
+    emailOrMobile
+    password
+    confirmPassword
+    building
+    roomNumber
+    residentType
+
+RESPONSE
+    200 message
+    400 message
+    500 message

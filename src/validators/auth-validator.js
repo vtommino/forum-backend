@@ -30,28 +30,7 @@ exports.registerSchema = Joi.object({
   }),
 });
 
-// const { value, error } = registerSchema.validate(test);
-// console.log(value);
-// console.log(error);
-
-// const test = {
-//   firstName: "aaaaaa",
-//   lastName: "bbbbbb",
-//   emailOrMobile: "aaa@gmail.com",
-//   password: "1111aaaa",
-//   confirmPassword: "1111aaaa",
-//   building: "A",
-//   roomNumber: "001",
-//   residentType: "Co-owner",
-// };
-// prisma.user.create({
-//   data: {
-//     firstName: "",
-//     lastName: "",
-//     emailOrMobile: "",
-//     password: "",
-//     building: "",
-//     roomNumber: "",
-//     residentType: "",
-//   },
-// });
+exports.loginSchema = Joi.object({
+  emailOrMobile: Joi.string().required(),
+  password: Joi.string().required(),
+});

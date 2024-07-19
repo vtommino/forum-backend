@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -13,141 +7,144 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id                  Int             @id @default(autoincrement())
-  firstName           String          
-  lastName            String
-  mobile              String?         @unique
-  email               String?         @unique
-  password            String
-  registerAt          DateTime        @default(now()) @db.Timestamp(0)
-  profileImage        String?
-  coverImage          String?
-  building            BuildingName
-  roomNumber          String
-  residentType        ResidentType    
-  gender              GenderType?
-  isAdmin 	          Boolean         @default(false)
-  userName            String?
-  isApproved          Boolean         @default(false)
-  approveAt           DateTime        @default(now()) @db.Timestamp(0)
-  idDocument          String?
-  isActive            Boolean         @default(true)
+model comment {
+  id               Int           @id @default(autoincrement())
+  postId           Int
+  userId           Int
+  commentImage     String
+  commentMessage   String
+  commentVideoLink String
+  commentMapLink   String
+  commentCreatedAt DateTime      @default(now()) @db.Timestamp(0)
+  commentUpdatedAt DateTime      @updatedAt @db.Timestamp(0)
+  commentDeletedAt DateTime?     @db.Timestamp(0)
+  post             post          @relation(fields: [postId], references: [id], map: "Comment_postId_fkey")
+  user             user          @relation(fields: [userId], references: [id], map: "Comment_userId_fkey")
+  commentlike      commentlike[]
 
-  posts               Post[]
-  postLikes           PostLike[]
-  comments            Comment[]
-  commentLikes        CommentLike[]
+  @@index([postId], map: "Comment_postId_fkey")
+  @@index([userId], map: "Comment_userId_fkey")
 }
 
-enum BuildingName {
-  A
-  B
-  C 
-  D
-  E
+model commentlike {
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  userId    Int
+  commentId Int
+  comment   comment  @relation(fields: [commentId], references: [id], map: "CommentLike_commentId_fkey")
+  user      user     @relation(fields: [userId], references: [id], map: "CommentLike_userId_fkey")
+
+  @@id([userId, commentId])
+  @@index([commentId], map: "CommentLike_commentId_fkey")
 }
 
-enum GenderType {
-  MALE
-  FEMALE
-  OTHERS
-}
-enum ResidentType {
-  CO_OWNER
-  CO_HABITANT
-  RENTEE
+model forum {
+  id        Int             @id @default(autoincrement())
+  forumType forum_forumType
+  name      String?
+  thread    thread[]
 }
 
-model Forum{
-  id                  Int             @id @default(autoincrement())
-  forumType           ForumType
+model post {
+  id              Int         @id @default(autoincrement())
+  userId          Int
+  threadId        Int
+  postTitle       String
+  postDescription String
+  postVideoLink   String?
+  postMapLink     String?
+  postCreatedAt   DateTime    @default(now()) @db.Timestamp(0)
+  postUpdatedAt   DateTime    @updatedAt @db.Timestamp(0)
+  postDeletedAt   DateTime?   @db.Timestamp(0)
+  comment         comment[]
+  thread          thread      @relation(fields: [threadId], references: [id], map: "Post_threadId_fkey")
+  user            user        @relation(fields: [userId], references: [id], map: "Post_userId_fkey")
+  postimage       postimage[]
+  postlike        postlike[]
 
-  threads             Thread[]
+  @@index([threadId], map: "Post_threadId_fkey")
+  @@index([userId], map: "Post_userId_fkey")
 }
 
-enum ForumType {
+model postimage {
+  id            Int    @id @default(autoincrement())
+  postId        Int
+  postImageLink String
+  post          post   @relation(fields: [postId], references: [id], map: "PostImage_postId_fkey")
+
+  @@index([postId], map: "PostImage_postId_fkey")
+}
+
+model postlike {
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  userId    Int
+  postId    Int
+  post      post     @relation(fields: [postId], references: [id], map: "PostLike_postId_fkey")
+  user      user     @relation(fields: [userId], references: [id], map: "PostLike_userId_fkey")
+
+  @@id([userId, postId])
+  @@index([postId], map: "PostLike_postId_fkey")
+}
+
+model thread {
+  id                Int    @id @default(autoincrement())
+  forumId           Int
+  threadTitle       String
+  threadDescription String
+  threadIcon        String
+  post              post[]
+  forum             forum  @relation(fields: [forumId], references: [id], map: "Thread_forumId_fkey")
+
+  @@index([forumId], map: "Thread_forumId_fkey")
+}
+
+model user {
+  id           Int               @id @default(autoincrement())
+  firstName    String
+  lastName     String
+  mobile       String?           @unique(map: "User_mobile_key")
+  email        String?           @unique(map: "User_email_key")
+  password     String
+  registerAt   DateTime          @default(now()) @db.Timestamp(0)
+  profileImage String?
+  coverImage   String?
+  building     user_building
+  roomNumber   String
+  residentType user_residentType
+  gender       user_gender?
+  isAdmin      Boolean           @default(false)
+  userName     String?
+  isApproved   Boolean           @default(false)
+  approveAt    DateTime          @default(now()) @db.Timestamp(0)
+  idDocument   String?
+  isActive     Boolean           @default(true)
+  comment      comment[]
+  commentlike  commentlike[]
+  post         post[]
+  postlike     postlike[]
+}
+
+enum forum_forumType {
   JURISTIC_CAT
   RESIDENT_CAT
   SALERENT_CAT
 }
 
-model Thread{
-  id                  Int             @id @default(autoincrement())
-  forumId             Int
-  threadTitle         String
-  threadDescription   String
-  threadIcon          String
-
-  forum               Forum           @relation(fields:[forumId], references:[id])
-
-  posts               Post[]
+enum user_building {
+  A
+  B
+  C
+  D
+  E
 }
 
-model Post{
-  id                  Int             @id @default(autoincrement())
-  userId              Int
-  threadId            Int
-  postTitle           String
-  postDescription     String
-  postVideoLink       String?
-  postMapLink         String?
-  postCreatedAt       DateTime        @default(now()) @db.Timestamp(0)
-  postUpdatedAt       DateTime        @updatedAt @db.Timestamp(0)
-  postDeletedAt       DateTime?       @db.Timestamp(0)
-
-  user                User            @relation(fields:[userId], references:[id])
-  thread              Thread          @relation(fields:[threadId], references:[id])
-
-  comments            Comment[]
-  postLikes           PostLike[]
-  postImages          PostImage[]
+enum user_residentType {
+  CO_OWNER
+  CO_HABITANT
+  RENTEE
 }
 
-model PostImage{
-  id                  Int             @id @default(autoincrement())
-  postId              Int
-  postImageLink       String
-
-  post                Post            @relation(fields:[postId], references:[id])
-}
-
-model Comment{
-  id                  Int             @id @default(autoincrement())
-  postId              Int
-  userId              Int
-  commentImage        String
-  commentMessage      String
-  commentVideoLink    String
-  commentMapLink      String
-  commentCreatedAt    DateTime        @default(now()) @db.Timestamp(0)
-  commentUpdatedAt    DateTime        @updatedAt @db.Timestamp(0)
-  commentDeletedAt    DateTime?       @db.Timestamp(0)
-
-  user                User            @relation(fields:[userId], references:[id])
-  post                Post            @relation(fields:[postId], references:[id])
-
-  commentLikes        CommentLike[]
-}
-
-model PostLike{
-  createdAt           DateTime        @default(now()) @db.Timestamp(0)
-  userId              Int
-  postId              Int
-
-  user                User            @relation(fields:[userId], references:[id])
-  post                Post            @relation(fields:[postId], references:[id])
-
-  @@id([userId,postId])
-}
-
-model CommentLike{
-  createdAt           DateTime        @default(now()) @db.Timestamp(0)
-  userId              Int
-  commentId           Int
-
-  user                User            @relation(fields:[userId], references:[id])
-  comment             Comment         @relation(fields:[commentId], references:[id])
-
-  @@id([userId,commentId])
+enum user_gender {
+  MALE
+  FEMALE
+  OTHERS
 }

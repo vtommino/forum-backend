@@ -14,3 +14,75 @@ RESPONSE
     200 message
     400 message
     500 message
+
+
+--- LOGIN
+POST /auth/login
+BODY 
+    emailOrPassword
+    password
+RESPONSE
+    200 accessToken
+    400 message
+    500 message
+
+--- GET AUTHENTICATED user
+GET /auth/me
+HEADER
+    Authorization bearer access_token
+    200 user 
+    400 message
+    401 message
+    500 message
+
+--- GET FORUM info
+GET /forum
+HEADER
+    Authorization bearer access_token
+RESPONSE
+    200 forum info
+    400 message
+    401 message
+    500 message
+
+--- GET THREAD info
+GET /thread
+HEADER
+    Authorization bearer access_token
+RESPONSE
+    200 thread info
+    400 message
+    401 message
+    500 message
+
+--- CREATE POST info
+POST /post
+BODY              
+  userId         
+  threadId       
+  postTitle       
+  postDescription 
+  postVideoLink? 
+  postMapLink?  
+HEADER
+    Authorization bearer access_token
+RESPONSE
+    200 post info
+    400 message
+    401 message
+    500 message
+
+--- DELETE
+DELETE /post/:postId
+HEADER
+    Authorization bearer access_token
+RESPONSE
+    200 message
+    400 message
+    500 message
+
+
+
+
+
+Delete photoimage  onCascade 

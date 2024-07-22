@@ -5,7 +5,7 @@ const threadController = {};
 threadController.getThreadInfoById = async (req, res, next) => {
   try {
     const data = await threadService.getInfoById(+req.params.threadId);
-    res.status(200).json({ thread: data });
+    res.status(200).json(data);
   } catch (err) {
     next(err);
   }

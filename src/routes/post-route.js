@@ -20,4 +20,5 @@ postRouter.patch(
 );
 postRouter.delete("/:postId", authenticate, postController.deletePost);
 
+postRouter.get("/:postId", authenticate, postController.getAllPost);
 module.exports = postRouter;

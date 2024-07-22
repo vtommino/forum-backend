@@ -10,6 +10,8 @@ const authRouter = require("./routes/auth-route");
 const forumRouter = require("./routes/forum-route");
 const threadRouter = require("./routes/thread-route");
 const postRouter = require("./routes/post-route");
+const adminRouter = require("./routes/admin-route");
+const commentRouter = require("./routes/comment-route");
 
 const app = express();
 
@@ -23,9 +25,11 @@ app.use("/auth", authRouter);
 app.use("/forum", forumRouter);
 app.use("/thread", threadRouter);
 app.use("/post", postRouter);
+app.use("/admin", adminRouter);
+app.use("/comment", commentRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);
 
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8889;
 app.listen(PORT, () => console.log(`server is running on port: ${PORT}`));

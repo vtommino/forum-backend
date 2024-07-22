@@ -58,18 +58,28 @@ postController.updatePost = async (req, res, next) => {
 postController.deletePost = async (req, res, next) => {
   try {
     console.log(req.params.postId);
-    await postService.deletePost(+req.params.postId);
     const response = await postService.findPostImageByPostId(
       +req.params.postId
     );
     if (response) {
       await postService.deletePostImage(+req.params.postId);
     }
+    await postService.deletePost(+req.params.postId);
 
     console.log(response);
     res.status(200).json({ message: "The post is deleted." });
   } catch (err) {
     next(err);
+  }
+};
+
+postController.getAllPost = async (req, res, next) => {
+  try {
+    console.log(req.params.postId);
+    const response = await postService.getPostById(+req.params.postId);
+    res.status(200).json(response);
+  } catch (error) {
+    next(error);
   }
 };
 module.exports = postController;

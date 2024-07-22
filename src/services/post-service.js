@@ -42,4 +42,14 @@ postService.findPostImageByPostId = (postId) =>
     where: { postId },
   });
 
+postService.getPostById = (id) =>
+  prisma.post.findUnique({
+    where: { id },
+    include: {
+      comment: { include: { user: true } },
+      user: { select: { userName: true, coverImage: true } },
+      thread: { include: { forum: true } },
+    },
+  });
+
 module.exports = postService;
